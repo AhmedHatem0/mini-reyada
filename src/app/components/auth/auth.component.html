@@ -1,0 +1,40 @@
+<div class="container">
+  
+    <div class="row justify-content-center align-items-center" style="height: 100vh;">
+      
+      <div class="col-12 col-md-6 col-lg-4">
+        @if (authenticatedEmail) {
+          <div class="alert alert-success">
+            <p>you are authenticated as</p>
+            <p>{{authenticatedEmail}}</p>
+            <button type="button" class="btn btn-danger" (click)="onLogout()"> logout</button>
+          </div>
+        }
+          <h2 class="text-center mb-4">{{isLoginMode?'login':'signup'}}</h2>
+          <form [formGroup]="authForm" (ngSubmit)="onSubmit()">
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" placeholder="Enter your email" formControlName="email"/>
+            </div>
+            
+            <div formGroupName="passwords">
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input type="password" class="form-control" id="password" placeholder="Enter your password" formControlName="password" />
+            </div>
+            @if(!isLoginMode){
+              <div class="mb-3">
+                <label for="confirm-password" class="form-label">confirm password</label>
+                <input type="password" class="form-control" id="confirm-password" placeholder="Enter your password" formControlName="confirmPassword" />
+              </div>
+            }
+          </div>
+
+            <button type="button" (click)="onSwitchMode()"> switch to {{isLoginMode?'sign up':'login'}} </button>
+            <button type="submit" class="btn btn-primary w-100" [disabled]="isButtonDisabled">{{isLoginMode?'login':'signup'}}</button>
+          </form>
+        </div>
+    </div>
+    
+  </div>
+  

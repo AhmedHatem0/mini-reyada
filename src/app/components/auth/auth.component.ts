@@ -34,19 +34,17 @@ export class AuthComponent implements OnInit{
   isLoginMode = true;
   authenticatedEmail :string|undefined;
   private userSub!: Subscription;
-  
+  authForm!: FormGroup;
+
   ngOnInit()  {
-    this.userSub = this.authSVC.user.subscribe({
-    next: (user) => {
-      this.authenticatedEmail = user?.email;
-    },
-  }); 
-  this.destroyRef.onDestroy(() => {
-    this.userSub.unsubscribe();
-  });
+    this.initializeForm();
+    this.setupUserSubscribtion();
   }
-  authForm: FormGroup;
-  constructor() {
+  get isButtonDisabled() {
+    return this.authForm.invalid;
+  }
+
+  initializeForm(){
     this.authForm = new FormGroup({
       email: new FormControl('', {
         validators: [Validators.required, Validators.email],
@@ -65,9 +63,15 @@ export class AuthComponent implements OnInit{
     });
     this.toggleConfirmPasswordValidators();
   }
-
-  get isButtonDisabled() {
-    return this.authForm.invalid;
+  setupUserSubscribtion(){
+    this.userSub = this.authSVC.user.subscribe({
+      next: (user) => {
+        this.authenticatedEmail = user?.email;
+      },
+    }); 
+    this.destroyRef.onDestroy(() => {
+      this.userSub.unsubscribe();
+    });
   }
 
   // Toggle validators based on the mode (login or signup)

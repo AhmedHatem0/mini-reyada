@@ -26,7 +26,6 @@ function equalValues(controlName1: string, controlName2: string) {
 function validPass(control: AbstractControl) {
   const regex=/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{6,}/;
   const pass = control.value;
-  console.log(pass);
   if(regex.test(pass)){
     return null;
   }
@@ -133,7 +132,6 @@ export class AuthComponent implements OnInit{
 
   onLogout(){
     this.authSVC.logout();
-    console.log(this.authenticatedEmail);
   }
 
   onSubmit() {
@@ -142,39 +140,34 @@ export class AuthComponent implements OnInit{
     }
     this.isLoading = true;
     if (this.isLoginMode) {
-      console.log('Logging in');
       this.authSVC
         .login(this.authForm.value.email, this.authForm.value.passwords.password)
         .subscribe(
           {
             next: (response) => {
-              console.log(response);
               this.isLoading = false;
+              this.error = null;
             },
             error: (error) => {
-              console.log(error);
               this.handleError(error);
               this.isLoading = false;
             },
           }
         );
     } else {
-      console.log('Signing up');
       this.authSVC
         .signup(this.authForm.value.email, this.authForm.value.passwords.password)
         .subscribe({
           next: (response) => {
-            console.log(response);
             this.isLoading = false;
+            this.error = null;
           },
           error: (error) => {
-            console.log(error);
             this.handleError(error);
             this.isLoading = false;
           },
         });
     }
-    console.log(this.authForm.value);
     this.authForm.reset();
   }
   handleError(errorObj:HttpErrorResponse){

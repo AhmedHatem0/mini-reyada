@@ -2,6 +2,8 @@
   
     <div class="row justify-content-center align-items-center" style="height: 100vh;">
       
+
+      
       <div class="col-12 col-md-6 col-lg-4">
         @if (authenticatedEmail) {
           <div class="alert alert-success">
@@ -10,6 +12,14 @@
             <button type="button" class="btn btn-danger" (click)="onLogout()"> logout</button>
           </div>
         }
+        @if (error) {
+          <div class="alert alert-danger">
+            <p>{{error}}</p>
+          </div>
+        }
+        @if(isLoading){
+          <app-spinner></app-spinner>
+      }
           <h2 class="text-center mb-4">{{isLoginMode?'login':'signup'}}</h2>
           <form [formGroup]="authForm" (ngSubmit)="onSubmit()">
             <div class="mb-3">

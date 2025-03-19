@@ -8,6 +8,8 @@ import {
 } from '@angular/forms';
 import { AuthService } from '../../services/auth-svc/auth.service';
 import { Subscription } from 'rxjs';
+import { SpinnerComponent } from '../shared/spinner/spinner.component';
+import { HttpErrorResponse } from '@angular/common/http';
 
 function equalValues(controlName1: string, controlName2: string) {
   return (control: AbstractControl) => {
@@ -33,7 +35,7 @@ function validPass(control: AbstractControl) {
 }
 @Component({
   selector: 'app-auth',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule,SpinnerComponent],
   templateUrl: './auth.component.html',
   styleUrl: './auth.component.css',
 })
@@ -43,8 +45,10 @@ export class AuthComponent implements OnInit{
     private userSub!: Subscription;
 
   authenticatedEmail :string|undefined;
+  error: string | null = null;
   authForm!: FormGroup;
   isLoginMode = true;
+  isLoading = false;
   
   ngOnInit()  {
     this.initializeForm();
@@ -136,6 +140,7 @@ export class AuthComponent implements OnInit{
     if (this.authForm.invalid) {
       return;
     }
+    this.isLoading = true;
     if (this.isLoginMode) {
       console.log('Logging in');
       this.authSVC
@@ -144,9 +149,12 @@ export class AuthComponent implements OnInit{
           {
             next: (response) => {
               console.log(response);
+              this.isLoading = false;
             },
             error: (error) => {
               console.log(error);
+              this.handleError(error);
+              this.isLoading = false;
             },
           }
         );
@@ -157,13 +165,29 @@ export class AuthComponent implements OnInit{
         .subscribe({
           next: (response) => {
             console.log(response);
+            this.isLoading = false;
           },
           error: (error) => {
             console.log(error);
+            this.handleError(error);
+            this.isLoading = false;
           },
         });
     }
     console.log(this.authForm.value);
     this.authForm.reset();
   }
+  handleError(errorObj:HttpErrorResponse){
+    switch(errorObj.error.error.message){
+      case 'EMAIL_EXISTS':
+        this.error = 'Email already exists';
+        break;
+      case 'INVALID_LOGIN_CREDENTIALS':
+        this.error = 'Invalid Credentials, please check your email and password';
+        break;
+      default:
+        this.error = 'An error occurred';
+    }
+  }
+
 }

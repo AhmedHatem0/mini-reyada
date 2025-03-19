@@ -7,9 +7,10 @@ import {
   Validators,
 } from '@angular/forms';
 import { AuthService } from '../../services/auth-svc/auth.service';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { SpinnerComponent } from '../shared/spinner/spinner.component';
 import { HttpErrorResponse } from '@angular/common/http';
+import { AuthResponseData } from '../../models/authResponseData.model';
 
 function equalValues(controlName1: string, controlName2: string) {
   return (control: AbstractControl) => {
@@ -139,26 +140,15 @@ export class AuthComponent implements OnInit{
       return;
     }
     this.isLoading = true;
+    
+    let observeable: Observable<AuthResponseData>;
     if (this.isLoginMode) {
-      this.authSVC
-        .login(this.authForm.value.email, this.authForm.value.passwords.password)
-        .subscribe(
-          {
-            next: (response) => {
-              this.isLoading = false;
-              this.error = null;
-            },
-            error: (error) => {
-              this.handleError(error);
-              this.isLoading = false;
-            },
-          }
-        );
+      observeable = this.authSVC.login(this.authForm.value.email, this.authForm.value.passwords.password);
     } else {
-      this.authSVC
-        .signup(this.authForm.value.email, this.authForm.value.passwords.password)
-        .subscribe({
-          next: (response) => {
+      observeable = this.authSVC.signup(this.authForm.value.email, this.authForm.value.passwords.password);
+    }
+      observeable.subscribe({
+          next: () => {
             this.isLoading = false;
             this.error = null;
           },
@@ -167,7 +157,7 @@ export class AuthComponent implements OnInit{
             this.isLoading = false;
           },
         });
-    }
+    
     this.authForm.reset();
   }
   handleError(errorObj:HttpErrorResponse){

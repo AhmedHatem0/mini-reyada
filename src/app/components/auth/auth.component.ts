@@ -21,7 +21,16 @@ function equalValues(controlName1: string, controlName2: string) {
     return { valuesNotEqual: true };
   };
 }
+function validPass(control: AbstractControl) {
+  const regex=/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{6,}/;
+  const pass = control.value;
+  console.log(pass);
+  if(regex.test(pass)){
+    return null;
+  }
+  return {passwordRegexMismatch:true};
 
+}
 @Component({
   selector: 'app-auth',
   imports: [ReactiveFormsModule],
@@ -31,17 +40,29 @@ function equalValues(controlName1: string, controlName2: string) {
 export class AuthComponent implements OnInit{
   private authSVC = inject(AuthService);
   private destroyRef = inject(DestroyRef);
-  isLoginMode = true;
-  authenticatedEmail :string|undefined;
-  private userSub!: Subscription;
-  authForm!: FormGroup;
+    private userSub!: Subscription;
 
+  authenticatedEmail :string|undefined;
+  authForm!: FormGroup;
+  isLoginMode = true;
+  
   ngOnInit()  {
     this.initializeForm();
     this.setupUserSubscribtion();
   }
   get isButtonDisabled() {
     return this.authForm.invalid;
+  }
+
+  get isPasswordValid(){
+    return this.authForm.get('passwords.password')?.valid || !this.authForm.get('passwords.password')?.touched ;
+  }
+  get isEmailValid(){
+  return this.authForm.get("email")?.valid || !this.authForm.get("email")?.touched;
+  }
+
+  get isConfirmPasswordValid(){
+    return this.authForm.get("passwords")?.valid || !this.authForm.get("passwords.confirmPassword")?.touched;
   }
 
   initializeForm(){
@@ -52,7 +73,7 @@ export class AuthComponent implements OnInit{
       passwords: new FormGroup(
         {
           password: new FormControl('', {
-            validators: [Validators.required, Validators.minLength(6)],
+            validators: [Validators.required],
           }),
           confirmPassword: new FormControl('', {
             validators: [Validators.required, Validators.minLength(6)],
@@ -76,23 +97,24 @@ export class AuthComponent implements OnInit{
 
   // Toggle validators based on the mode (login or signup)
   toggleConfirmPasswordValidators() {
-    const confirmPasswordControl = this.authForm.get(
-      'passwords.confirmPassword'
-    );
-    const passwordControl = this.authForm.get('passwords');
+    const confirmPasswordControl = this.authForm.get('passwords.confirmPassword');
+    const passwordsControl = this.authForm.get('passwords');
+    const passwordControl = this.authForm.get('passwords.password');
     if (this.isLoginMode) {
       // Remove validators for confirmPassword in login mode
       confirmPasswordControl?.clearValidators();
-      passwordControl?.clearValidators();
+      passwordsControl?.clearValidators();
+      passwordControl?.removeValidators(validPass);
     } else {
       // Add validators for confirmPassword in signup mode
       confirmPasswordControl?.setValidators([
         Validators.required,
         Validators.minLength(6),
       ]);
-      passwordControl?.setValidators([
+      passwordsControl?.setValidators([
         equalValues('password', 'confirmPassword'),
       ]);
+      passwordControl?.addValidators([validPass]);
     }
 
     // Update the validity of the confirmPassword control

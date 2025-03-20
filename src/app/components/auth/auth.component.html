@@ -18,7 +18,10 @@
           </div>
         }
         @if(isLoading){
-          <app-spinner></app-spinner>
+          <div class="d-flex justify-content-center">
+            <app-spinner></app-spinner>
+          </div>
+          
       }
           <h2 class="text-center mb-4">{{isLoginMode?'login':'signup'}}</h2>
           <form [formGroup]="authForm" (ngSubmit)="onSubmit()">

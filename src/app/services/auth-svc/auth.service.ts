@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { Subject, tap } from 'rxjs';
 import { User } from '../../models/user.model';
 import { AuthResponseData } from '../../models/authResponseData.model';
+import { environment } from '../../../environments/environment';
 
 
 
@@ -16,7 +17,7 @@ export class AuthService {
   login(email: string, password: string) {
     return this.http
       .post<AuthResponseData>(
-        'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyCXi6DZM6-z5mMJY_ONtgw5RMcZZ2E-i2c',
+        `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${environment.API_KEY}`,
         {
           email: email,
           password: password,
@@ -42,7 +43,7 @@ export class AuthService {
   signup(email: string, password: string) {
     return this.http
       .post<AuthResponseData>(
-        'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyCXi6DZM6-z5mMJY_ONtgw5RMcZZ2E-i2c',
+        `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${environment.API_KEY}`,
         {
           email: email,
           password: password,

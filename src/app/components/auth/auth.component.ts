@@ -11,28 +11,9 @@ import { Observable, Subscription } from 'rxjs';
 import { SpinnerComponent } from '../shared/spinner/spinner.component';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthResponseData } from '../../models/authResponseData.model';
+import { equalValues, validPass } from './auth.utils';
 
-function equalValues(controlName1: string, controlName2: string) {
-  return (control: AbstractControl) => {
-    const val1 = control.get(controlName1)?.value;
-    const val2 = control.get(controlName2)?.value;
 
-    if (val1 === val2) {
-      return null;
-    }
-
-    return { valuesNotEqual: true };
-  };
-}
-function validPass(control: AbstractControl) {
-  const regex=/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{6,}/;
-  const pass = control.value;
-  if(regex.test(pass)){
-    return null;
-  }
-  return {passwordRegexMismatch:true};
-
-}
 @Component({
   selector: 'app-auth',
   imports: [ReactiveFormsModule,SpinnerComponent],
@@ -45,14 +26,15 @@ export class AuthComponent implements OnInit{
     private userSub!: Subscription;
 
   authenticatedEmail :string|undefined;
-  error: string | null = null;
+  error: string='';	
   authForm!: FormGroup;
   isLoginMode = true;
   isLoading = false;
   
   ngOnInit()  {
+    // this.authForm.valueChanges.
     this.initializeForm();
-    this.setupUserSubscribtion();
+    this.setupUserSubscription();
   }
   get isButtonDisabled() {
     return this.authForm.invalid;
@@ -88,7 +70,7 @@ export class AuthComponent implements OnInit{
     });
     this.toggleConfirmPasswordValidators();
   }
-  setupUserSubscribtion(){
+  setupUserSubscription(){
     this.userSub = this.authSVC.user.subscribe({
       next: (user) => {
         this.authenticatedEmail = user?.email;
@@ -132,6 +114,7 @@ export class AuthComponent implements OnInit{
   }
 
   onLogout(){
+    window.localStorage.removeItem('token');
     this.authSVC.logout();
   }
 
@@ -148,9 +131,10 @@ export class AuthComponent implements OnInit{
       observeable = this.authSVC.signup(this.authForm.value.email, this.authForm.value.passwords.password);
     }
       observeable.subscribe({
-          next: () => {
+          next: (response) => {
+            window.localStorage.setItem('token', JSON.stringify(response.idToken));
             this.isLoading = false;
-            this.error = null;
+            this.error = '';
           },
           error: (error) => {
             this.handleError(error);

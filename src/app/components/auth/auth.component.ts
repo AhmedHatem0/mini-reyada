@@ -114,7 +114,6 @@ export class AuthComponent implements OnInit{
   }
 
   onLogout(){
-    window.localStorage.removeItem('token');
     this.authSVC.logout();
   }
 
@@ -132,7 +131,6 @@ export class AuthComponent implements OnInit{
     }
       observeable.subscribe({
           next: (response) => {
-            window.localStorage.setItem('token', JSON.stringify(response.idToken));
             this.isLoading = false;
             this.error = '';
           },

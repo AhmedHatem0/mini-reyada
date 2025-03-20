@@ -1,9 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Subject, tap } from 'rxjs';
+import { BehaviorSubject, Subject, tap } from 'rxjs';
 import { User } from '../../models/user.model';
 import { AuthResponseData } from '../../models/authResponseData.model';
 import { environment } from '../../../environments/environment';
+import { Router } from '@angular/router';
 
 
 
@@ -12,7 +13,9 @@ import { environment } from '../../../environments/environment';
 })
 export class AuthService {
   private http = inject(HttpClient);
-  user = new Subject<User|null>();
+  private router = inject(Router);
+  //subject vs behaviourSubject????
+  user = new BehaviorSubject<User|null>(null);
 
   login(email: string, password: string) {
     return this.http
@@ -38,6 +41,8 @@ export class AuthService {
 
   logout() {
     this.user.next(null);
+    window.localStorage.removeItem('userData');
+
   }
 
   signup(email: string, password: string) {
@@ -71,5 +76,8 @@ export class AuthService {
     const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
     const user = new User(email, userId, token, expirationDate);
     this.user.next(user);
+    window.localStorage.setItem('userData', JSON.stringify(user));
+    this.router.navigate(['/']);
+
   }
 }

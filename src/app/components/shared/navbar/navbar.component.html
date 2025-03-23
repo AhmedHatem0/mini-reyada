@@ -1,1 +1,12 @@
-<p>navbar works!</p>
+<nav class="navbar">
+    <div class="brand">
+      <h1>Mini Reyada</h1>
+    </div>
+    <div class="nav-buttons">
+      <a routerLink="/" class="nav-button">Requests List</a>
+      <a routerLink="/create-request" class="nav-button">Create Request</a>
+      @if (isAuthenticated) {
+              <button type="button" class="btn btn-danger" (click)="onLogout()">Logout</button>
+      }
+    </div>
+  </nav>

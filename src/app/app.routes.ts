@@ -16,7 +16,7 @@ export const routes: Routes = [
         component: AuthComponent
     },
     {
-        path:"create-reyada-request",
+        path:"create-request",
         component: CreateReyadaRequestComponent,
         canActivate: [AuthGuard]
 

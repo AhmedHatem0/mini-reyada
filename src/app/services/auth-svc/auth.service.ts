@@ -16,6 +16,9 @@ export class AuthService {
   private router = inject(Router);
   //subject vs behaviourSubject????
   user = new BehaviorSubject<User|null>(null);
+  private tokenExpirationTimer: any;
+
+
 
   login(email: string, password: string) {
     return this.http
@@ -39,11 +42,7 @@ export class AuthService {
       );
   }
 
-  logout() {
-    this.user.next(null);
-    window.localStorage.removeItem('userData');
 
-  }
 
   signup(email: string, password: string) {
     return this.http
@@ -66,6 +65,54 @@ export class AuthService {
         })
       );
   }
+  autoLogin() {
+
+    const stringData = sessionStorage.getItem('userData');
+    if(!stringData){
+      return;
+    }
+    const userData: {
+      email: string;
+      id: string;
+      _token: string;
+      _tokenExpirationDate: string;
+    } = JSON.parse(stringData);
+    
+    // if (!userData) {
+    //   return;
+    // }
+
+    const loadedUser = new User(
+      userData.email,
+      userData.id,
+      userData._token,
+      new Date(userData._tokenExpirationDate)
+    );
+
+    if (loadedUser.token) {
+      this.user.next(loadedUser);
+      const expirationDuration =
+        new Date(userData._tokenExpirationDate).getTime() -
+        new Date().getTime();
+      this.autoLogout(expirationDuration);
+    }
+  }
+
+  logout() {
+    this.user.next(null);
+    sessionStorage.removeItem('userData');
+    this.router.navigate(['/auth']);
+    if (this.tokenExpirationTimer) {
+      clearTimeout(this.tokenExpirationTimer);
+    }
+    this.tokenExpirationTimer = null;
+  }
+
+  autoLogout(expirationDuration: number) {
+    this.tokenExpirationTimer = setTimeout(() => {
+      this.logout();
+    }, expirationDuration);
+  }
 
   private handleAuthentication(
     email: string,
@@ -76,8 +123,8 @@ export class AuthService {
     const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
     const user = new User(email, userId, token, expirationDate);
     this.user.next(user);
-    window.localStorage.setItem('userData', JSON.stringify(user));
+    this.autoLogout(expiresIn * 1000);
+    sessionStorage.setItem('userData', JSON.stringify(user));
     this.router.navigate(['/']);
-
   }
 }

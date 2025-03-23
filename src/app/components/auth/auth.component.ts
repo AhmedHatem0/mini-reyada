@@ -12,6 +12,7 @@ import { SpinnerComponent } from '../shared/spinner/spinner.component';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthResponseData } from '../../models/authResponseData.model';
 import { equalValues, validPass } from './auth.utils';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -24,6 +25,7 @@ export class AuthComponent implements OnInit{
   private authSVC = inject(AuthService);
   private destroyRef = inject(DestroyRef);
     private userSub!: Subscription;
+  private router = inject(Router);
 
   authenticatedEmail :string|undefined;
   error: string='';	
@@ -35,6 +37,9 @@ export class AuthComponent implements OnInit{
     // this.authForm.valueChanges.
     this.initializeForm();
     this.setupUserSubscription();
+    if(sessionStorage.getItem('userData')){
+      this.router.navigate(['/']);
+    }
   }
   get isButtonDisabled() {
     return this.authForm.invalid;

@@ -1,11 +1,11 @@
 <div class="container my-4">
     <h1 class="text-center mb-4">انشاء طلب جديد</h1>
-    <form class="bg-light p-4 rounded shadow-sm">
+    <form class="bg-light p-4 rounded shadow-sm" [formGroup]="requestForm">
         <div class="row mb-4">
             <div class="col-md-6 mb-3">
                 <mat-form-field class="w-100">
                     <mat-label>نوع الطلب</mat-label>
-                    <mat-select >
+                    <mat-select>
                         <mat-option value="one">First option</mat-option>
                         <mat-option value="two">Second option</mat-option>
                     </mat-select>
@@ -15,7 +15,7 @@
             <div class="col-md-6 mb-3">
                 <mat-form-field class="w-100">
                     <mat-label>نوع الدعم المطلوب</mat-label>
-                    <mat-select >
+                    <mat-select>
                         <mat-option value="one">First option</mat-option>
                         <mat-option value="two">Second option</mat-option>
                     </mat-select>
@@ -32,7 +32,7 @@
                     <div class="col-md-4 mb-3">
                         <mat-form-field class="w-100">
                             <mat-label>الباب</mat-label>
-                            <mat-select >
+                            <mat-select>
                                 <mat-option value="one">First option</mat-option>
                                 <mat-option value="two">Second option</mat-option>
                             </mat-select>
@@ -41,7 +41,7 @@
                     <div class="col-md-4 mb-3">
                         <mat-form-field class="w-100">
                             <mat-label>القسم</mat-label>
-                            <mat-select >
+                            <mat-select>
                                 <mat-option value="one">First option</mat-option>
                                 <mat-option value="two">Second option</mat-option>
                             </mat-select>
@@ -50,7 +50,7 @@
                     <div class="col-md-4 mb-3">
                         <mat-form-field class="w-100">
                             <mat-label>المجموعة</mat-label>
-                            <mat-select >
+                            <mat-select>
                                 <mat-option value="one">First option</mat-option>
                                 <mat-option value="two">Second option</mat-option>
                             </mat-select>
@@ -59,7 +59,7 @@
                     <div class="col-md-6 mb-3">
                         <mat-form-field class="w-100">
                             <mat-label>الفئة</mat-label>
-                            <mat-select >
+                            <mat-select>
                                 <mat-option value="one">First option</mat-option>
                                 <mat-option value="two">Second option</mat-option>
                             </mat-select>
@@ -68,7 +68,7 @@
                     <div class="col-md-6 mb-3">
                         <mat-form-field class="w-100">
                             <mat-label>النشاط</mat-label>
-                            <mat-select >
+                            <mat-select>
                                 <mat-option value="one">First option</mat-option>
                                 <mat-option value="two">Second option</mat-option>
                             </mat-select>
@@ -82,8 +82,8 @@
             <div class="card-body">
                 <h6 class="card-title">هل النشاط التجاري الذي تمارسه له علاقة مباشرة او غير مباشرة بنشاط الجهة</h6>
                 <mat-radio-group aria-label="Select an option" class="d-flex gap-3 mt-3">
-                    <mat-radio-button value="true" >نعم</mat-radio-button>
-                    <mat-radio-button value="false" >لا</mat-radio-button>
+                    <mat-radio-button value="true">نعم</mat-radio-button>
+                    <mat-radio-button value="false">لا</mat-radio-button>
                 </mat-radio-group>
             </div>
         </div>
@@ -95,16 +95,6 @@
             </mat-form-field>
         </div>
 
-        <div class="card mb-4">
-            <div class="card-body">
-                <h6 class="card-title">هل لديك أقارب حتى الدرجة الرابعة في الجهة</h6>
-                <mat-radio-group aria-label="Select an option" class="d-flex gap-3 mt-3">
-                    <mat-radio-button value="true" >نعم</mat-radio-button>
-                    <mat-radio-button value="false" >لا</mat-radio-button>
-                </mat-radio-group>
-            </div>
-        </div>
-
         <div class="mb-4">
             <mat-form-field class="w-100">
                 <mat-label>طبيعة نشاط التجارة و علاقته بالجهة</mat-label>
@@ -112,37 +102,58 @@
             </mat-form-field>
         </div>
 
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-3 mb-3">
-                    <mat-form-field class="w-100">
-                        <mat-label>الاسم</mat-label>
-                        <input matInput>
-
-                    </mat-form-field>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <mat-form-field class="w-100">
-                        <mat-label>الادارة</mat-label>
-                        <input matInput>
-
-                    </mat-form-field>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <mat-form-field class="w-100">
-                        <mat-label>المسمى الوظيفي</mat-label>
-                        <input matInput>
-
-                    </mat-form-field>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <mat-form-field class="w-100">
-                        <mat-label>المرتبة</mat-label>
-                        <input matInput>
-                    </mat-form-field>
-                </div>
+        <div class="card mb-4">
+            <div class="card-body">
+                <h6 class="card-title">هل لديك أقارب حتى الدرجة الرابعة في الجهة</h6>
+                <mat-radio-group aria-label="Select an option" class="d-flex gap-3 mt-3" formControlName="hasRelatives">
+                    <mat-radio-button value="true">نعم</mat-radio-button>
+                    <mat-radio-button value="false">لا</mat-radio-button>
+                </mat-radio-group>
             </div>
         </div>
+        @if (showRelativesList) {
+            <!-- TODOD: add button to add a new relative to the list -->
+             <div class="d-flex">
+                 <h6>قائمة الاقارب</h6>
+                 <button class="btn btn-primary rounded-cricle" (click)="addRelative()">+</button>
+             </div>
+            <div class="shadow-sm border border-primary" formArrayName="relativesList">
+                @for (item of relativesList; track $index) {
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <mat-form-field class="w-100">
+                                <mat-label>الاسم</mat-label>
+                                <input matInput>
+    
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <mat-form-field class="w-100">
+                                <mat-label>الادارة</mat-label>
+                                <input matInput>
+    
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <mat-form-field class="w-100">
+                                <mat-label>المسمى الوظيفي</mat-label>
+                                <input matInput>
+    
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <mat-form-field class="w-100">
+                                <mat-label>المرتبة</mat-label>
+                                <input matInput>
+                            </mat-form-field>
+                        </div>
+                        <!-- TODO: add button to remove the current relative from the list -->
+                    </div>
+                </div>
+            }
+            </div>
+        }
 
         <div class="mb-4">
             <h3 class="d-flex justify-content-center">خطة العمل</h3>

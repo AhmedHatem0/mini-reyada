@@ -27,7 +27,7 @@
           <form [formGroup]="authForm" (ngSubmit)="onSubmit()">
             <div class="mb-3">
               <label for="email" class="form-label">Email</label>
-              <input type="email" class="form-control" id="email" placeholder="Enter your email" formControlName="email"/>
+              <input type="email" class="form-control" id="email" placeholder="user@example.com" formControlName="email"/>
               @if(!isEmailValid){
                 <div class="alert alert-danger mt-2" >
                   <p>email is not valid</p>

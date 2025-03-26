@@ -1,1 +1,84 @@
-<p>reyada-request-details works!</p>
+<div class="details-container" *ngIf="request">
+    <h2 class="title">تفاصيل الطلب</h2>
+  
+    <div class="details-grid">
+      <div class="detail-item">
+        <span class="label">رقم الطلب:</span>
+        <span class="value">{{ request.requestId }}</span>
+      </div>
+  
+      <div class="detail-item">
+        <span class="label">نوع الطلب:</span>
+        <span class="value">{{ request.requestType }}</span>
+      </div>
+  
+      <div class="detail-item">
+        <span class="label">نوع الدعم:</span>
+        <span class="value">{{ request.supportType }}</span>
+      </div>
+  
+      <div class="detail-item">
+        <span class="label">عنوان الخطة:</span>
+        <span class="value">{{ request.planTitle }}</span>
+      </div>
+  
+      <div class="detail-item">
+        <span class="label">البريد الإلكتروني:</span>
+        <span class="value">{{ request.employeePersonalEmail }}</span>
+      </div>
+  
+      <div class="detail-item">
+        <span class="label">طبيعة العمل:</span>
+        <span class="value">{{ request.businessNature }}</span>
+      </div>
+  
+      <div class="detail-item">
+        <span class="label">القطاع:</span>
+        <span class="value">{{ request.businessActivitySector }}</span>
+      </div>
+  
+      <div class="detail-item">
+        <span class="label">القسم:</span>
+        <span class="value">{{ request.businessActivityDivision }}</span>
+      </div>
+  
+      <div class="detail-item">
+        <span class="label">مرتبط بالجهة؟</span>
+        <span class="value">{{ request.businessRelatedToOrg ? 'نعم' : 'لا' }}</span>
+      </div>
+  
+      <div class="detail-item">
+        <span class="label">وجود أقارب؟</span>
+        <span class="value">{{ request.hasRelatives ? 'نعم' : 'لا' }}</span>
+      </div>
+  
+      <div class="detail-item full-width">
+        <span class="label">خطة العمل:</span>
+        <p class="value">{{ request.workPlan }}</p>
+      </div>
+    </div>
+  
+    <!-- Display Relatives if exists -->
+    <div *ngIf="request.hasRelatives && request.relativeEmployees.length > 0">
+      <h3 class="subtitle">تفاصيل الأقارب في الجهة</h3>
+      <table class="relatives-table">
+        <thead>
+          <tr>
+            <th>الاسم</th>
+            <th>المسمى الوظيفي</th>
+            <th>الإدارة</th>
+            <th>الدرجة الوظيفية</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let relative of request.relativeEmployees">
+            <td>{{ relative.name }}</td>
+            <td>{{ relative.positionTitle }}</td>
+            <td>{{ relative.unitName }}</td>
+            <td>{{ relative.positionGrade }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  

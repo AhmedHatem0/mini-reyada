@@ -1,3 +1,31 @@
-<p>list-reyada-request works!</p>
-
-<!-- TODO: create table for requests -->
+<div class="table-container">
+    <h2 class="title">قائمة الطلبات</h2>
+  
+    <table mat-table [dataSource]="requests" class="mat-elevation-z8 custom-table">
+  
+      <ng-container matColumnDef="requestId">
+        <th mat-header-cell *matHeaderCellDef class="header-cell"> رقم الطلب </th>
+        <td mat-cell *matCellDef="let request" class="data-cell"> {{ request.requestId }} </td>
+      </ng-container>
+  
+      <ng-container matColumnDef="requestType">
+        <th mat-header-cell *matHeaderCellDef class="header-cell"> نوع الطلب </th>
+        <td mat-cell *matCellDef="let request" class="data-cell"> {{ request.requestType }} </td>
+      </ng-container>
+  
+      <ng-container matColumnDef="supportType">
+        <th mat-header-cell *matHeaderCellDef class="header-cell"> نوع الدعم </th>
+        <td mat-cell *matCellDef="let request" class="data-cell"> {{ request.supportType }} </td>
+      </ng-container>
+  
+      <ng-container matColumnDef="planTitle">
+        <th mat-header-cell *matHeaderCellDef class="header-cell"> عنوان الخطة </th>
+        <td mat-cell *matCellDef="let request" class="data-cell"> {{ request.planTitle }} </td>
+      </ng-container>
+  
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="navigate(row)" class="row-hover"></tr>
+  
+    </table>
+  </div>
+  

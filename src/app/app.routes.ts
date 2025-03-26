@@ -22,7 +22,7 @@ export const routes: Routes = [
 
     },
     {
-        path:"details",
+        path:"details/:requestId",
         component:ReyadaRequestDetailsComponent,
         canActivate: [AuthGuard]
     }

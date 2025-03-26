@@ -19,7 +19,5 @@ export class ListReyadaRequestComponent {
 
   navigate(row: ReyadaRequestDto){
     this.router.navigate(["/details",row.requestId])
-    console.log(row);
   }
-  //TODO: get all requests summaries
 }

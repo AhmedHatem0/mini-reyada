@@ -1,55 +1,57 @@
 import { Component, DestroyRef, inject } from '@angular/core';
-import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatInputModule } from '@angular/material/input';
-import { RelativeDto } from '../../models/relative.model';
+import { NgFor } from '@angular/common';
+import { RequestsService } from '../../services/requests-svc/requests.service';
+import { AuthService } from '../../services/auth-svc/auth.service';
+import { ReyadaRequestDto } from '../../models/request.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-create-reyada-request',
-  imports: [ReactiveFormsModule,MatSelectModule, MatRadioModule, MatInputModule],
+  imports: [ReactiveFormsModule,MatSelectModule, MatRadioModule, MatInputModule,NgFor],
   templateUrl: './create-reyada-request.component.html',
   styleUrl: './create-reyada-request.component.css',
 })
 export class CreateReyadaRequestComponent {
   private destroyRef = inject(DestroyRef);
-
+  private requestSVC = inject(RequestsService);
+  private authSVC = inject(AuthService);
+  private router = inject(Router);
   requestForm!: FormGroup;
   
-  //TODO D: manage state of relativesList on the hasRelatives value.
   showRelativesList:boolean = false;
   ngOnInit() {
     this.initializeForm();
   }
   get relativesList(){
-    console.log((this.requestForm.get("relativesList") as FormArray).controls.length)
-    return (this.requestForm.get("relativesList") as FormArray).controls;
+    return (this.requestForm.get("relativeEmployees") as FormArray).controls;
+  }
+  get sectorsList(){
+    return this.requestSVC.businessActivitySectors;
+  }
+  get divisionsList(){
+    return this.requestSVC.businessActivityDivisions;
   }
 
-
   initializeForm() {
-    //TODO: add required validators to all controls
     this.requestForm = new FormGroup({
-      requestType: new FormControl(''),
-      supportType: new FormControl(''),
-      businessNature: new FormGroup({
-        module: new FormControl(''),
-        section: new FormControl(''),
-        group: new FormControl(''),
-        category: new FormControl(''),
-        activity: new FormControl(''),
-      }),
-      isRelatedActivity: new FormControl(false),
-      requestTitle: new FormControl(''),
-      hasRelatives: new FormControl(false),
-      businessDescription: new FormControl(''),
-      relativesList: new FormArray([]),
-      businessPlan: new FormControl(''),
+      requestType: new FormControl('',Validators.required),
+      supportType: new FormControl('',Validators.required),
+      businessActivitySector: new FormControl('',Validators.required),
+      businessActivityDivision: new FormControl('',Validators.required),
+      businessRelatedToOrg: new FormControl(false,Validators.required),
+      planTitle: new FormControl('',Validators.required),
+      businessNature: new FormControl('',Validators.required),
+      hasRelatives: new FormControl(false,Validators.required),
+      relativeEmployees: new FormArray([this.createRelativeInfoGroup()]),
+      workPlan: new FormControl('',Validators.required),
     });
 
     const relativeSub = this.requestForm.get("hasRelatives")!.valueChanges.subscribe({
-      next: val => this.onRadioChange(val)
+      next: val => this.onRelativesRadioChange(val)
     })
 
     this.destroyRef.onDestroy(()=>relativeSub.unsubscribe());
@@ -58,33 +60,61 @@ export class CreateReyadaRequestComponent {
 
   createRelativeInfoGroup(){
     return new FormGroup({
-      name: new FormControl(''),
-      management: new FormControl(''),
-      jobTitle: new FormControl(''),
-      level: new FormControl(''),
+      name: new FormControl('',Validators.required),
+      unitName: new FormControl('',Validators.required),
+      positionTitle: new FormControl('',Validators.required),
+      positionGrade: new FormControl('',Validators.required),
     })
   }
 
   
-  //TODO D: add a relative to the list
-  addRelative(){
-    (this.requestForm.get("relativesList") as FormArray).push(this.createRelativeInfoGroup());
+  onAddRelative(){
+    (this.requestForm.get("relativeEmployees") as FormArray).push(this.createRelativeInfoGroup());
   }
-  onRadioChange(val:string){
+  onRelativesRadioChange(val:string){
     
-    console.log("the valueChanges observable value", val);
-
     if(val==="true"){
       this.showRelativesList = true;
     }
     else{
       this.showRelativesList = false;
-      this.requestForm.setControl("relativesList", new FormArray([]));
+      this.requestForm.setControl("relativeEmployees", new FormArray([ this.createRelativeInfoGroup()]));
     }
   }
 
-  //TODO: remove a relative from the list
-  removeRelative(index: number): void {
-    (this.requestForm.get("relativesList") as FormArray).removeAt(index);
+  onRemoveRelative(index: number): void {
+    const relativesList = (this.requestForm.get("relativeEmployees") as FormArray);
+    if(relativesList.length===1)
+    {
+      this.requestForm.get("hasRelatives")?.setValue('false');
+    }
+    relativesList.removeAt(index);
+  }
+
+  onSubmit(){
+    if(this.requestForm.invalid)
+      return;
+    //should i get it from the session or the service?
+    let userEmail:string;
+    const sub = this.authSVC.user.subscribe({
+      next: user => {
+        userEmail = user!.email;
+        const newRequest:ReyadaRequestDto = {
+          ...this.requestForm.value,
+          employeePersonalEmail:userEmail,
+          requestId:"REQ"+ Math.trunc(Math.random()*100000)
+        }
+        this.requestSVC.addRequest(newRequest);
+
+      },
+      error: error => console.error(error),
+    })
+    this.destroyRef.onDestroy(()=>sub.unsubscribe());
+    alert("تمت اضافة الطلب");
+    this.router.navigate(["/"]);
+  }
+
+  onCancel(){
+    this.router.navigate(["/"]);
   }
 }

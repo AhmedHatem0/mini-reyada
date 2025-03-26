@@ -5,13 +5,12 @@ import { RequestType, ReyadaRequestDto, SupportType } from '../../models/request
   providedIn: 'root'
 })
 export class RequestsService {
-  // TODO1: create requests list --persist in file?
-  private businessActivitySectors = [
+  businessActivitySectors = [
     "التكنولوجيا", "الرعاية الصحية", "التعليم", "المالية", "التجزئة", "التصنيع", "العقارات", "السياحة", "الترفيه", "الخدمات اللوجستية",
     "الزراعة", "السيارات", "البناء", "الطاقة", "الاتصالات", "الصناعات الدوائية", "الإعلام", "الأغذية والمشروبات", "الخدمات القانونية", "الاستشارات"
   ];
   
-  private businessActivityDivisions = [
+  businessActivityDivisions = [
     "تطوير البرمجيات", "المعدات الطبية", "إدارة المدارس", "الخدمات المصرفية الاستثمارية", "التجارة الإلكترونية",
     "تصنيع النسيج", "إدارة العقارات", "سلاسل الفنادق", "إنتاج الأفلام", "إدارة سلاسل التوريد"
   ];
@@ -75,13 +74,11 @@ export class RequestsService {
     }
   ];
     
-  // TODO2: add request
+  addRequest(request:ReyadaRequestDto){
+    this.dummyReyadaRequests.push(request);
+  }
   
-  // TODO3: get request
   getRequest(requestId:string){
     return this.dummyReyadaRequests.find((request)=> request.requestId===requestId )!;
   }
-
-  // TODO4: get request summary -- for the list view?
-
 }
